@@ -1,0 +1,32 @@
+name: test-microstack
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  push:
+
+jobs:
+  microstack:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: 3.12
+
+      - name: Install python dependencies
+        run: |
+          pip install uv
+          uv sync
+
+      - name: Install and start Microstack
+        run: |
+          ./ci/microstack.sh
+
+      - name: Setup tmate session
+        uses: mxschmitt/action-tmate@v3
